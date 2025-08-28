@@ -10,15 +10,35 @@ c.fillRect(0, 0, canvas.width, canvas.height);
 const gravity = 0.2;
 
 class Sprite {
-  constructor({ position, velocity }) {
+  constructor({ position, velocity, color }) {
     this.position = position;
     this.velocity = velocity;
     this.height = 200;
+    this.width = 50;
     this.lastKey;
+    this.attackBox = {
+      position: this.position,
+      width: 100,
+      height: 50,
+    };
+    this.color = color;
+    this.isAttacking;
   }
   draw() {
     c.fillStyle = "red";
-    c.fillRect(this.position.x, this.position.y, 50, this.height);
+    c.fillRect(this.position.x, this.position.y, this.width, this.height);
+
+    //attack box
+    if(this.isAttacking){
+
+        c.fillStyle = this.color;
+        c.fillRect(
+          this.attackBox.position.x,
+          this.attackBox.position.y,
+          this.attackBox.width,
+          this.attackBox.height
+        );
+    }
   }
 
   update() {
@@ -31,6 +51,13 @@ class Sprite {
       this.velocity.y += gravity;
     }
   }
+
+  attack() {
+    this.isAttacking = true;
+    setTimeout(() => {
+      this.isAttacking = false;
+    }, 100);  
+  }
 }
 
 const player = new Sprite({
@@ -42,6 +69,7 @@ const player = new Sprite({
     x: 0,
     y: 0,
   },
+  color: "green",
 });
 const enemy = new Sprite({
   position: {
@@ -52,6 +80,7 @@ const enemy = new Sprite({
     x: 0,
     y: 0,
   },
+  color: "blue",
 });
 
 player.draw();
@@ -98,6 +127,18 @@ function animate() {
   } else if (keys.ArrowRight.pressed && enemy.lastKey === "ArrowRight") {
     enemy.velocity.x = 5;
   }
+
+  //collision detection
+  if (
+    player.attackBox.position.x + player.attackBox.width >= enemy.position.x &&
+    player.attackBox.position.x <= enemy.position.x + enemy.width &&
+    player.attackBox.position.y + player.attackBox.height >= enemy.position.y &&
+    player.attackBox.position.y <= enemy.position.y + enemy.height &&
+    player.isAttacking
+  ) {
+    player.isAttacking  = false;
+    console.log("go");
+  }
 }
 
 animate();
@@ -117,6 +158,11 @@ window.addEventListener("keydown", (event) => {
         player.velocity.y = -10;
         break;
       }
+      break;
+    case " ": 
+        player.attack();
+        break;
+
 
     case "ArrowRight":
       keys.ArrowRight.pressed = true;
@@ -133,7 +179,7 @@ window.addEventListener("keydown", (event) => {
       }
       break;
   }
-  console.log(event.key);
+    console.log(event.key);
 });
 window.addEventListener("keyup", (event) => {
   switch (event.key) {
