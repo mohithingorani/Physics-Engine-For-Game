@@ -9,68 +9,19 @@ canvas.height = 576;
 
 c.fillRect(0, 0, canvas.width, canvas.height);
 
-const gravity = 0.2;
+const background = new Sprite({
+  position:{
+    x:0,
+    y:0
+  },
+  imgSrc:"./img/background.png"
+});
 
-class Sprite {
-  constructor({ position, velocity, color, offset }) {
-    this.position = position;
-    this.velocity = velocity;
-    this.height = 200;
-    this.width = 50;
-    this.health = 100;
-    this.lastKey;
-    this.attackBox = {
-      position: {
-        x: this.position.x,
-        y: this.position.y,
-      },
-      offset,
-      width: 100,
-      height: 50,
-    };
-    this.color = color;
-    this.isAttacking;
-  }
-  draw() {
-    c.fillStyle = "red";
-    c.fillRect(this.position.x, this.position.y, this.width, this.height);
 
-    //attack box
-    if (this.isAttacking) {
-      c.fillStyle = this.color;
-      c.fillRect(
-        this.attackBox.position.x,
-        this.attackBox.position.y,
-        this.attackBox.width,
-        this.attackBox.height
-      );
-    }
-  }
 
-  update() {
-    this.draw();
-    this.attackBox.position.x = this.position.x + this.attackBox.offset.x;
-    this.attackBox.position.y = this.position.y;
-    this.position.x += this.velocity.x;
-    this.position.y += this.velocity.y;
-    if (this.position.y + this.height + this.velocity.y >= canvas.height) {
-      this.velocity.y = 0;
-    } else {
-      this.velocity.y += gravity;
-    }
-  }
-
-  attack() {
-    this.isAttacking = true;
-    setTimeout(() => {
-      this.isAttacking = false;
-    }, 100);
-  }
-}
-
-const player = new Sprite({
+const player = new Fighter({
   position: {
-    x: 0,
+    x: 100,
     y: 0,
   },
   velocity: {
@@ -83,10 +34,10 @@ const player = new Sprite({
   },
   color: "green",
 });
-const enemy = new Sprite({
+const enemy = new Fighter({
   position: {
     x: 400,
-    y: 300,
+    y: 0,
   },
   velocity: {
     x: 0,
@@ -120,53 +71,14 @@ const keys = {
   },
 };
 
-function rectangularCollision({ rectangle1, rectangle2 }) {
-  return (
-    rectangle1.attackBox.position.x + rectangle1.attackBox.width >=
-      rectangle2.position.x &&
-    rectangle1.attackBox.position.x <=
-      rectangle2.position.x + rectangle2.width &&
-    rectangle1.attackBox.position.y + rectangle1.attackBox.height >=
-      rectangle2.position.y &&
-    rectangle1.attackBox.position.y <= rectangle2.position.y + rectangle2.height
-  );
-}
-let timer = 10;
-function displayResult(result) {
-  resultTag.style.display = "flex";
-  resultTag.innerHTML = result;
-}
 
-function determineWinner({ player, enemy, timerId }) {
-clearTimeout(timerId);
-  if (player.health === enemy.health) {
-    displayResult("Tie");
-  } else if (player.health > enemy.health) {
-    displayResult("Player 1 won");
-  } else {
-    displayResult("Player 2 won");
-  }
-}
-
-let timerId;
-function decreaseTimer() {
-  if (timer > 0) {
-    timerId = setTimeout(decreaseTimer, 1000);
-    timerTag.innerHTML = timer;
-    timer--;
-  }
-  if (timer == 0 || player.health<=0 || enemy.health<=0) {
-    timer=0;
-    timerTag.innerHTML = 0;
-    determineWinner({player,enemy, timerId});
-  }
-}
 decreaseTimer();
 
 function animate() {
   c.fillStyle = "black";
   c.fillRect(0, 0, canvas.width, canvas.height);
   window.requestAnimationFrame(animate);
+  background.update();
   player.update();
   enemy.update();
 
@@ -226,8 +138,8 @@ window.addEventListener("keydown", (event) => {
       player.lastKey = "a";
       break;
     case "w":
-      if (player.position.y + player.height >= canvas.height) {
-        player.velocity.y = -10;
+      if (player.position.y + player.height >= canvas.height-95) {
+        player.velocity.y = -7;
         break;
       }
       break;
@@ -244,8 +156,8 @@ window.addEventListener("keydown", (event) => {
       enemy.lastKey = "ArrowLeft";
       break;
     case "ArrowUp":
-      if (enemy.position.y + enemy.height >= canvas.height) {
-        enemy.velocity.y = -10;
+      if (enemy.position.y + enemy.height >= canvas.height-95) {
+        enemy.velocity.y = -7;
         break;
       }
       break;
