@@ -74,8 +74,8 @@ const player = new Fighter({
     },
 
     attack: {
-      imgSrc: "./samurai/Attack1.png",
-      framesMax: 6,
+      imgSrc: "./samurai/Attack1_cleaned.png",
+      framesMax: 4,
     },
   },
 });
@@ -212,15 +212,18 @@ function animate() {
 //   }
 
   //collision detection
+
+  let healthDown = 5; 
+
   if (
     rectangularCollision({
       rectangle1: player,
       rectangle2: enemy,
     }) &&
-    player.isAttacking && player.framesCurrent===4
+    player.isAttacking && player.framesCurrent===2
   ) {
     player.isAttacking = false;
-    enemy.health -= 20;
+    enemy.health -= healthDown;
     document.querySelector("#enemyHealth").style.width = enemy.health + "%";
   }
   if (
@@ -231,7 +234,7 @@ function animate() {
     enemy.isAttacking && enemy.framesCurrent ===2
   ) {
     enemy.isAttacking = false;
-    player.health -= 20;
+    player.health -= healthDown;
     document.querySelector("#playerHealth").style.width = player.health + "%";
     console.log("enemy attack successful");
   }
