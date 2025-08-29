@@ -77,6 +77,14 @@ const player = new Fighter({
       imgSrc: "./samurai/Attack1_cleaned.png",
       framesMax: 4,
     },
+    takeHit: {
+      imgSrc: "./samurai/Take hit.png",
+      framesMax: 4,
+    },
+    death : {
+      imgSrc : "./samurai/Death.png",
+      framesMax :6
+    }
   },
 });
 const enemy = new Fighter({
@@ -131,6 +139,14 @@ const enemy = new Fighter({
       imgSrc: "./kenji/Attack1.png",
       framesMax: 4,
     },
+    takeHit: {
+      imgSrc: "./kenji/Take hit.png",
+      framesMax: 3,
+    },
+    death : {
+      imgSrc : "./kenji/Death.png",
+      framesMax :7
+    }
   },
 });
 
@@ -201,29 +217,30 @@ function animate() {
   } else if (enemy.velocity.y > 0) {
     enemy.switchSprites("fall");
   }
-//player misses
-//   if(player.isAttacking && player.framesCurrent===4){
-//     player.isAttacking = false;
-//   }
+  
 
-// // enemy misses
-//   if(enemy.isAttacking && enemy.framesCurrent===2){
-//     enemy.isAttacking = false;
-//   }
+  //player misses
+  //   if(player.isAttacking && player.framesCurrent===4){
+  //     player.isAttacking = false;
+  //   }
+
+  // // enemy misses
+  //   if(enemy.isAttacking && enemy.framesCurrent===2){
+  //     enemy.isAttacking = false;
+  //   }
 
   //collision detection
-
-  let healthDown = 5; 
 
   if (
     rectangularCollision({
       rectangle1: player,
       rectangle2: enemy,
     }) &&
-    player.isAttacking && player.framesCurrent===2
+    player.isAttacking &&
+    player.framesCurrent === 2
   ) {
+    enemy.takeHit();
     player.isAttacking = false;
-    enemy.health -= healthDown;
     document.querySelector("#enemyHealth").style.width = enemy.health + "%";
   }
   if (
@@ -231,10 +248,11 @@ function animate() {
       rectangle1: enemy,
       rectangle2: player,
     }) &&
-    enemy.isAttacking && enemy.framesCurrent ===2
+    enemy.isAttacking &&
+    enemy.framesCurrent === 2
   ) {
     enemy.isAttacking = false;
-    player.health -= healthDown;
+    player.takeHit();
     document.querySelector("#playerHealth").style.width = player.health + "%";
     console.log("enemy attack successful");
   }
@@ -280,7 +298,7 @@ window.addEventListener("keydown", (event) => {
       enemy.attack();
       break;
   }
-  //   console.log(event.key);
+  console.log(event.key);
 });
 window.addEventListener("keyup", (event) => {
   switch (event.key) {

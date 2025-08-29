@@ -46,7 +46,7 @@ class Sprite {
     }
   }
   update() {
-    this.animateFrames();
+    if (!this.dead) this.animateFrames();
     this.draw();
   }
 }
@@ -83,6 +83,7 @@ class Fighter extends Sprite {
     this.velocity = velocity;
     this.height = 200;
     this.width = 50;
+    this.dead = false;
     this.health = 100;
     this.lastKey;
     this.attackBox = {
@@ -90,7 +91,7 @@ class Fighter extends Sprite {
         x: this.position.x,
         y: this.position.y,
       },
-      offset : attackBox.offset,
+      offset: attackBox.offset,
       width: attackBox.width,
       height: attackBox.height,
     };
@@ -101,7 +102,7 @@ class Fighter extends Sprite {
       sprites[sprite].image = new Image();
       sprites[sprite].image.src = sprites[sprite].imgSrc;
     }
-    console.log(this.sprites);
+    // console.log(this.sprites);
   }
   // draw() {
   //   c.fillStyle = "red";
@@ -119,6 +120,15 @@ class Fighter extends Sprite {
   //   }
   // }
 
+  takeHit() {
+    this.health -= 20;
+    if (this.health <= 0) {
+      this.switchSprites("death");
+    } else {
+      this.switchSprites("takeHit");
+    }
+  }
+
   update() {
     this.draw();
     this.animateFrames();
@@ -131,24 +141,41 @@ class Fighter extends Sprite {
     //   this.attackBox.width,
     //   this.attackBox.height
     // );
-    this.position.x += this.velocity.x;
-    this.position.y += this.velocity.y;
+    if(this.position.x+this.velocity.x > 4 && this.position.x+this.velocity.x <935){
+
+      this.position.x += this.velocity.x;
+      this.position.y += this.velocity.y;
+    }
 
     // Gravity function
     if (this.position.y + this.height + this.velocity.y >= canvas.height - 95) {
       this.velocity.y = 0;
-      console.log(this.position.y);
+      // console.log(this.position.y);
       this.position.y = 281;
     } else {
       this.velocity.y += gravity;
     }
   }
   switchSprites(sprite) {
+    if (this.image === this.sprites.death.image) {
+      if ((this.framesCurrent = this.sprites.death.framesMax - 1)) {
+        this.dead = true;
+      }
+      return;
+    }
     if (
       this.image === this.sprites.attack.image &&
       this.framesCurrent < this.sprites.attack.framesMax - 1
+    ) {
+      return;
+    }
+
+    if (
+      this.image === this.sprites.takeHit.image &&
+      this.framesCurrent < this.sprites.takeHit.framesMax - 1
     )
       return;
+
     switch (sprite) {
       case "idle":
         if (this.image !== this.sprites.idle.image) {
@@ -169,7 +196,7 @@ class Fighter extends Sprite {
           this.image = this.sprites.jump.image;
           this.framesMax = this.sprites.jump.framesMax;
           this.framesCurrent = 0;
-          console.log(this.image);
+          // console.log(this.image);
         }
         break;
       case "fall":
@@ -177,7 +204,7 @@ class Fighter extends Sprite {
           this.image = this.sprites.fall.image;
           this.framesMax = this.sprites.fall.framesMax;
           this.framesCurrent = 0;
-          console.log(this.image);
+          // console.log(this.image);
         }
         break;
       case "attack":
@@ -188,12 +215,25 @@ class Fighter extends Sprite {
           console.log("attack");
         }
         break;
+      case "takeHit":
+        if (this.image != this.sprites.takeHit.image) {
+          this.image = this.sprites.takeHit.image;
+          this.framesMax = this.sprites.takeHit.framesMax;
+          this.framesCurrent = 0;
+        }
+        break;
+      case "death":
+        if (this.image != this.sprites.death.image) {
+          this.image = this.sprites.death.image;
+          this.framesMax = this.sprites.death.framesMax;
+          this.framesCurrent = 0;
+        }
+        break;
     }
   }
 
   attack() {
     this.switchSprites("attack");
     this.isAttacking = true;
-   
   }
 }
