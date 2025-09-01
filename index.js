@@ -81,10 +81,10 @@ const player = new Fighter({
       imgSrc: "./samurai/Take hit.png",
       framesMax: 4,
     },
-    death : {
-      imgSrc : "./samurai/Death.png",
-      framesMax :6
-    }
+    death: {
+      imgSrc: "./samurai/Death.png",
+      framesMax: 6,
+    },
   },
 });
 const enemy = new Fighter({
@@ -143,10 +143,10 @@ const enemy = new Fighter({
       imgSrc: "./kenji/Take hit.png",
       framesMax: 3,
     },
-    death : {
-      imgSrc : "./kenji/Death.png",
-      framesMax :7
-    }
+    death: {
+      imgSrc: "./kenji/Death.png",
+      framesMax: 7,
+    },
   },
 });
 
@@ -217,7 +217,6 @@ function animate() {
   } else if (enemy.velocity.y > 0) {
     enemy.switchSprites("fall");
   }
-  
 
   //player misses
   //   if(player.isAttacking && player.framesCurrent===4){
@@ -317,3 +316,23 @@ window.addEventListener("keyup", (event) => {
       break;
   }
 });
+
+const socket = new WebSocket("ws://localhost:8080");
+socket.onopen = () => {
+  console.log("Connected to the server");
+};
+
+socket.onmessage = (event) => {
+  const message = JSON.parse(event.data);
+  console.log(message);
+  if (message.type === "movement") {
+    const move = message.move;
+    if (move === "left") {
+      enemy.velocity.x = -5;
+      enemy.switchSprites("run");
+    } else if (move === "right") {
+      enemy.velocity.x = 5;
+      enemy.switchSprites("run");
+    }
+  }
+};

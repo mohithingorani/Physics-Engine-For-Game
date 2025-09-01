@@ -9,7 +9,7 @@ function rectangularCollision({ rectangle1, rectangle2 }) {
     rectangle1.attackBox.position.y <= rectangle2.position.y + rectangle2.height
   );
 }
-let timer = 60;
+let timer = 120;
 function displayResult(result) {
   resultTag.style.display = "flex";
   resultTag.innerHTML = result;
