@@ -317,22 +317,22 @@ window.addEventListener("keyup", (event) => {
   }
 });
 
-const socket = new WebSocket("ws://localhost:8080");
-socket.onopen = () => {
-  console.log("Connected to the server");
-};
+// const socket = new WebSocket("ws://localhost:8080");
+// socket.onopen = () => {
+//   console.log("Connected to the server");
+// };
 
-socket.onmessage = (event) => {
-  const message = JSON.parse(event.data);
-  console.log(message);
-  if (message.type === "movement") {
-    const move = message.move;
-    if (move === "left") {
-      enemy.velocity.x = -5;
-      enemy.switchSprites("run");
-    } else if (move === "right") {
-      enemy.velocity.x = 5;
-      enemy.switchSprites("run");
-    }
-  }
-};
+// socket.onmessage = (event) => {
+//   const message = JSON.parse(JSON.stringify(event.data));
+//   console.log
+//   if (message.type === "MOVEMENT") {
+//     const move = message.move;
+//     if (move === "left") {
+//       enemy.velocity.x = -5;
+//       enemy.switchSprites("run");
+//     } else if (move === "right") {
+//       enemy.velocity.x = 5;
+//       enemy.switchSprites("run");
+//     }
+//   }
+// };
